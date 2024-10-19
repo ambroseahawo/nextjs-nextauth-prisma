@@ -1,5 +1,6 @@
 'use client';
 
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -33,7 +34,8 @@ const FormSchema = z
   });
 
 const SignUpForm = () => {
-  const router = useRouter()
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -62,7 +64,12 @@ const SignUpForm = () => {
     if(response.ok){
       router.push('/sign-in')
     }else{
-      console.log('Registration failed')
+      console.log(response)
+      toast({
+        title: 'Error',
+        description: 'Registration Failed',
+        variant: 'destructive'
+      })
     }
   };
 

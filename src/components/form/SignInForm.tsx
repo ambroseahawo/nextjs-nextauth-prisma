@@ -1,5 +1,6 @@
 'use client';
 
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
@@ -28,6 +29,7 @@ const FormSchema = z.object({
 
 const SignInForm = () => {
   const router = useRouter()
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -43,7 +45,11 @@ const SignInForm = () => {
       redirect: false
     })
     if(signInData?.error) {
-      console.log(signInData?.error)
+      toast({
+        title: 'Error',
+        description: 'Invalid Username or Password',
+        variant: 'destructive'
+      })
     }else{
       // router.refresh();
       router.push('/admin');
