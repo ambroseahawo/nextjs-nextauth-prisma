@@ -1,6 +1,13 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import GoogleSignInButton from '../GoogleSignInButton';
+import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
@@ -9,15 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import Link from 'next/link';
-import GoogleSignInButton from '../GoogleSignInButton';
 
 const FormSchema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email'),
+  emailOrUsername: z.string().min(1, 'Email or Username is required'),
   password: z
     .string()
     .min(1, 'Password is required')
@@ -25,16 +27,26 @@ const FormSchema = z.object({
 });
 
 const SignInForm = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      emailOrUsername: '',
+      password: ''
     },
   });
 
-  const onSubmit = (values: z.infer<typeof FormSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const signInData = await signIn('credentials', {
+      emailOrUsername: values.emailOrUsername,
+      password: values.password,
+      redirect: false
+    })
+    if(signInData?.error) {
+      console.log(signInData?.error)
+    }else{
+      router.push('/admin');
+    }
   };
 
   return (
@@ -43,10 +55,10 @@ const SignInForm = () => {
         <div className='space-y-2'>
           <FormField
             control={form.control}
-            name='email'
+            name='emailOrUsername'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email or Username</FormLabel>
                 <FormControl>
                   <Input placeholder='mail@example.com' {...field} />
                 </FormControl>
