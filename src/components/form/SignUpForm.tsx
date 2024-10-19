@@ -1,6 +1,12 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import GoogleSignInButton from '../GoogleSignInButton';
+import { Button } from '../ui/button';
 import {
   Form,
   FormControl,
@@ -9,12 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import Link from 'next/link';
-import GoogleSignInButton from '../GoogleSignInButton';
 
 const FormSchema = z
   .object({
@@ -32,6 +33,7 @@ const FormSchema = z
   });
 
 const SignUpForm = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -42,8 +44,26 @@ const SignUpForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof FormSchema>) => {
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     console.log(values);
+
+    const response = await fetch('/api/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: values.username,
+        email: values.email,
+        password: values.password
+      })
+    })
+
+    if(response.ok){
+      router.push('/sign-in')
+    }else{
+      console.log('Registration failed')
+    }
   };
 
   return (

@@ -1,10 +1,23 @@
 import { db } from "@/lib/db";
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
+import * as z from 'zod';
+
+// schema validation
+const userSchema = z
+  .object({
+    username: z.string().min(1, 'Username is required').max(100),
+    email: z.string().min(1, 'Email is required').email('Invalid email'),
+    password: z
+      .string()
+      .min(1, 'Password is required')
+      .min(8, 'Password must have than 8 characters'),
+  });
 
 export async function POST(req: Request) {
   try {
-    const { email, username, password } = await req.json();
+    const body = await req.json()
+    const { email, username, password } = userSchema.parse(body);
 
     // check existing user by email
     const existingUserByEmail = await db.user.findUnique({
@@ -22,6 +35,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ user: null, message: "Username already registered"}, { status: 409 })
     }
 
+    // create new user
     const hashedPassword = await hash(password, 10)
     const newUser = await db.user.create({ data: { email, username, password: hashedPassword} })
     const { password: newUserPassword, ...rest } = newUser
