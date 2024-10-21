@@ -1,4 +1,5 @@
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 import express from "express";
 import helmet from "helmet";
 import { corsHandler } from "./middlewares/cors";
