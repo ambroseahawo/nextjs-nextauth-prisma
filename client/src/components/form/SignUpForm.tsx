@@ -1,6 +1,8 @@
 'use client';
 
 import { useToast } from "@/hooks/use-toast";
+import { useRegisterMutation } from "@/store/auth/auth-api";
+import { AxiosBaseQueryError } from '@/types/ApiError';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -35,6 +37,7 @@ const FormSchema = z
 
 const SignUpForm = () => {
   const router = useRouter();
+  const [register, { isLoading, error }] = useRegisterMutation()
   const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -48,29 +51,40 @@ const SignUpForm = () => {
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     console.log(values);
-
-    const response = await fetch('/api/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username: values.username,
-        email: values.email,
-        password: values.password
-      })
-    })
-
-    if(response.ok){
-      router.push('/sign-in')
-    }else{
-      console.log(response)
+    try {
+      await register(values).unwrap()
+      router.push('/login')
+    } catch (error) {
+      const axiosError = error as AxiosBaseQueryError;
+      console.log(axiosError.data?.error);
       toast({
-        title: 'Error',
-        description: 'Registration Failed',
-        variant: 'destructive'
-      })
+        description: axiosError.data?.error || 'Error',
+        variant: 'destructive',
+      });
     }
+
+    // const response = await fetch('/api/user', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     username: values.username,
+    //     email: values.email,
+    //     password: values.password
+    //   })
+    // })
+
+    // if(response.ok){
+    //   router.push('/sign-in')
+    // }else{
+    //   console.log(response)
+    //   toast({
+    //     title: 'Error',
+    //     description: 'Registration Failed',
+    //     variant: 'destructive'
+    //   })
+    // }
   };
 
   return (
