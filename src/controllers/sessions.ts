@@ -1,7 +1,7 @@
-import redis from "@/redis/redisClient";
 import { Request, Response } from "express";
 import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
+import redis from "../redis/redisClient";
 
 const SESSION_EXPIRY = 2 * 60 * 60; // 2 hours in seconds
 
