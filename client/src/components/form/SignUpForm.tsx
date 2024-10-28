@@ -60,6 +60,7 @@ const SignUpForm = () => {
       toast({
         description: axiosError.data?.error || 'Error',
         variant: 'destructive',
+        duration: 1200
       });
     }
 
