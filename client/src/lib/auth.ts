@@ -1,4 +1,4 @@
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -15,50 +15,49 @@ export const authOptions: NextAuthOptions = {
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         emailOrUsername: { label: "Email or Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
-        if(!credentials?.emailOrUsername || !credentials?.password) return null;
+        if (!credentials?.emailOrUsername || !credentials?.password) return null;
 
         const existingUser = await db.user.findFirst({
           where: {
-            OR: [
-              { username: credentials?.emailOrUsername },
-              { email: credentials?.emailOrUsername },
-            ],
+            OR: [{ username: credentials?.emailOrUsername }, { email: credentials?.emailOrUsername }],
           },
         });
-        if(!existingUser) return null;
+        if (!existingUser) return null;
 
-        const passwordMatch = await compare(credentials?.password, existingUser.password)
-        if(!passwordMatch) return null;
+        const passwordMatch = await compare(credentials?.password, existingUser.password);
+        if (!passwordMatch) return null;
 
         return {
           id: existingUser.id,
           email: existingUser.email,
-          username: existingUser.username
-        }
-      }
-    })
+          username: existingUser.username,
+        };
+      },
+    }),
   ],
   callbacks: {
-    async jwt({token, user }){
-      if(user){
-        return { ...token, username: user.username}
+    async jwt({ token, user }) {
+      if (user) {
+        return { ...token, username: user.username };
       }
-      return token
+      return token;
     },
-    async session({ session, token }){
-      return { ...session, user: { ...session.user, username: token.username }}
-    }
+    async session({ session, token }) {
+      return { ...session, user: { ...session.user, username: token.username } };
+    },
   },
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
   adapter: PrismaAdapter(db),
   pages: {
-    'signIn': '/sign-in'
+    signIn: "/sign-in",
   },
-  secret: process.env.NEXTAUTH_SECRET
-}
+  secret: process.env.NEXTAUTH_SECRET,
+};
+
+// https://chatgpt.com/c/67154332-05ec-8007-a82a-e57fb1ff0b9a
