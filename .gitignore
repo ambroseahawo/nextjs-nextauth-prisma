@@ -40,9 +40,6 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
 # Dependency directories
 node_modules/
 jspm_packages/
@@ -142,5 +139,19 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
 
 # End of https://www.toptal.com/developers/gitignore/api/node
