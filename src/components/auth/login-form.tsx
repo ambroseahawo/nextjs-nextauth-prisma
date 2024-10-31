@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { CardWrapper } from "@/components/auth/card-wrapper";
+import { FormError } from "@/components/form-error";
+import { FormSuccess } from "@/components/form-success";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -19,6 +21,11 @@ export const LoginForm = () => {
       password: "",
     },
   });
+
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+    console.log(values);
+  };
+
   return (
     <CardWrapper
       headerLabel="Welcome Back"
@@ -27,7 +34,7 @@ export const LoginForm = () => {
       showSocial
     >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(() => {})} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
             <FormField
               control={form.control}
@@ -56,6 +63,8 @@ export const LoginForm = () => {
               )}
             />
           </div>
+          <FormError message="" />
+          <FormSuccess message="" />
           <Button className="w-full" type="submit">
             Login
           </Button>
