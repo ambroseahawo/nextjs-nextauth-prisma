@@ -19,7 +19,6 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       email,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
-      redirect: false,
     });
   } catch (error) {
     console.log("LOGIN ERROR: ", error);
