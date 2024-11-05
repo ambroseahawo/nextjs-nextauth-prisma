@@ -10,7 +10,7 @@ export const publicRoutes: string[] = ["/"];
  * These routes will redirect logged in users to protected routes
  * @type {string[]}
  */
-export const authRoutes: string[] = ["/auth/register", "/auth/login"];
+export const authRoutes: string[] = ["/auth/register", "/auth/login", "/auth/error"];
 
 /**
  * Prefix for api authentication routes
