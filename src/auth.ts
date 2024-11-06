@@ -47,7 +47,7 @@ export const {
         const verificationToken = await generateVerificationToken(existingUser?.email as string);
         await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
-        return "/auth/verify";
+        return "/auth/verification-sent";
       }
 
       return true;
