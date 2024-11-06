@@ -2,9 +2,9 @@
 
 import * as z from "zod";
 
-import { generatePasswordResetToken } from "@/data/tokens";
 import { getUserByEmail } from "@/data/user";
 import { sendPasswordResetEmail } from "@/lib/mail";
+import { generatePasswordResetToken } from "@/lib/tokens";
 import { RequestResetPasswordSchema } from "@/schemas";
 
 export const requestResetPassword = async (values: z.infer<typeof RequestResetPasswordSchema>) => {
