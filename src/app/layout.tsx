@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 
 import { SessionProvider } from "next-auth/react";
 
+import { Toaster } from "@/components/ui/sonner";
+
 import { auth } from "@/auth";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,7 +19,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <SessionProvider session={session}>
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <Toaster />
+          {children}
+        </body>
       </html>
     </SessionProvider>
   );
