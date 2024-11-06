@@ -29,9 +29,10 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     });
 
     // if (!existingUser.emailVerified) {
-    //   await generateVerificationToken(existingUser.email);
+    //   const verificationToken = await generateVerificationToken(existingUser.email);
+    //   await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
-    //   return { success: "Confirmation email sent!" };
+    // return { success: "Confirmation email sent!" };
     // }
     return { success: "Login successful" };
   } catch (error) {

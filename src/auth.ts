@@ -5,6 +5,8 @@ import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
+import { generateVerificationToken } from "./data/tokens";
+import { sendVerificationEmail } from "./lib/mail";
 
 // declare module "next-auth" {
 //   interface Session {
@@ -40,7 +42,13 @@ export const {
       const existingUser = await getUserById(user.id as string);
 
       // prevent credential sign without email verification
-      if (!existingUser?.emailVerified) return false;
+      // TODO - redirect to /auth/verify
+      if (!existingUser?.emailVerified) {
+        const verificationToken = await generateVerificationToken(existingUser?.email as string);
+        await sendVerificationEmail(verificationToken.email, verificationToken.token);
+
+        return "/auth/verify";
+      }
 
       return true;
     },
