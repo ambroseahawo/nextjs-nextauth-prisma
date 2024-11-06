@@ -33,6 +33,17 @@ export const {
     },
   },
   callbacks: {
+    async signIn({ user, account }) {
+      // allow OAuth
+      if (account?.provider !== "credentials") return true;
+
+      const existingUser = await getUserById(user.id as string);
+
+      // prevent credential sign without email verification
+      if (!existingUser?.emailVerified) return false;
+
+      return true;
+    },
     async session({ token, session }) {
       // session.user.customField = "value";
       if (token.sub && session.user) {
