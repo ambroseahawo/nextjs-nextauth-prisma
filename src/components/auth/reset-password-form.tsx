@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import { useSearchParams } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -13,28 +15,36 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { requestResetPassword } from "@/actions/request-reset-password";
-import { RequestResetPasswordSchema } from "@/schemas";
+import { resetPassword } from "@/actions/reset-password";
+import { ResetPasswordSchema } from "@/schemas";
 
-export const RequestResetPasswordForm = () => {
+export const ResetPasswordForm = () => {
+  const searchParams = useSearchParams();
+
+  const token = searchParams.get("token");
+
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
 
-  const form = useForm<z.infer<typeof RequestResetPasswordSchema>>({
-    resolver: zodResolver(RequestResetPasswordSchema),
+  const form = useForm<z.infer<typeof ResetPasswordSchema>>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      email: "",
+      password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RequestResetPasswordSchema>) => {
-    // console.log(values);
+  const onSubmit = (values: z.infer<typeof ResetPasswordSchema>) => {
     setError("");
     setSuccess("");
 
+    if (!token) {
+      setError("Invalid token");
+      return;
+    }
+
     startTransition(() => {
-      requestResetPassword(values).then((data) => {
+      resetPassword(values, token).then((data) => {
         // console.log({ data });
         setError(data?.error);
         setSuccess(data?.success);
@@ -44,7 +54,7 @@ export const RequestResetPasswordForm = () => {
 
   return (
     <CardWrapper
-      headerLabel="Forgot your password?"
+      headerLabel="Enter new password"
       backButtonLabel="Back to login"
       backButtonHref="/auth/login"
     >
@@ -53,12 +63,12 @@ export const RequestResetPasswordForm = () => {
           <div className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isPending} placeholder="bob@gmail.com" type="email" />
+                    <Input {...field} disabled={isPending} placeholder="********" type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,7 +78,7 @@ export const RequestResetPasswordForm = () => {
           <FormError message={error} />
           <FormSuccess message={success} />
           <Button className="w-full" type="submit" disabled={isPending}>
-            Send Password Reset Email
+            Reset Password
           </Button>
         </form>
       </Form>

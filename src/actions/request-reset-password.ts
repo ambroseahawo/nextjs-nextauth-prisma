@@ -7,7 +7,7 @@ import { getUserByEmail } from "@/data/user";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { RequestResetPasswordSchema } from "@/schemas";
 
-export const RequestRestPassword = async (values: z.infer<typeof RequestResetPasswordSchema>) => {
+export const requestResetPassword = async (values: z.infer<typeof RequestResetPasswordSchema>) => {
   const validatedFields = RequestResetPasswordSchema.safeParse(values);
 
   if (!validatedFields.success) return { error: "Invalid fields" };
