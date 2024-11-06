@@ -5,7 +5,8 @@ import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
-import { generateVerificationToken } from "./data/tokens";
+import { generateVerificationToken } from "@/lib/tokens";
+import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 import { sendVerificationEmail } from "./lib/mail";
 
 // declare module "next-auth" {
@@ -48,6 +49,14 @@ export const {
         await sendVerificationEmail(verificationToken.email, verificationToken.token);
 
         return "/auth/verification-sent";
+      }
+
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
+
+        if (!twoFactorConfirmation) return false;
+
+        await db.twoFactorConfirmation.delete({ where: { id: twoFactorConfirmation.id } });
       }
 
       return true;
