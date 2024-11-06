@@ -12,3 +12,14 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Click <a href="${confirmationLink}">here</a> to confirm your account</p>`,
   });
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const resetLink = `${process.env.FRONTEND_HOST}/auth/reset-password?token=${token}`;
+
+  await resend.emails.send({
+    from: "NextAuth <onboarding@resend.dev>",
+    to: email,
+    subject: "Reset your password",
+    html: `<p>Click <a href="${resetLink}">here</a> to confirm your account</p>`,
+  });
+};
