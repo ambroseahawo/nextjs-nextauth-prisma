@@ -6,6 +6,7 @@ import authConfig from "@/auth.config";
 import { getUserById } from "@/data/user";
 import { db } from "@/lib/db";
 import { generateVerificationToken } from "@/lib/tokens";
+import { getAccountByUserId } from "./data/account";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 import { sendVerificationEmail } from "./lib/mail";
 
@@ -75,6 +76,14 @@ export const {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
       }
 
+      if (session.user) {
+        session.user.name = token.name;
+        session.user.email = token.email as string;
+        session.user.isOAuth = token.isOAuth as boolean;
+      }
+
+      console.log({ session });
+
       return session;
     },
     async jwt({ token }) {
@@ -83,8 +92,15 @@ export const {
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
 
+      const existingAccount = await getAccountByUserId(existingUser.id);
+
+      token.isOAuth = !!existingAccount;
+      token.name = existingUser.name;
+      token.email = existingUser.email;
       token.role = existingUser.role;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+
+      console.log({ token });
 
       return token;
     },
